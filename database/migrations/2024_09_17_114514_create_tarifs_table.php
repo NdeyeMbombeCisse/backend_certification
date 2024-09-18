@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('tarifs', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle');
-            $table->enum('nationnalite', ['senegalais', 'stranger resident', 'etranger non resident']);
+            $table->string('tarif');
+            $table->enum('nationnalite', ['senegalais', 'etranger resident', 'etranger non resident']);   
+            $table->unsignedBigInteger('categorie_id'); // Colonne pour la clé étrangère
+            $table->foreign('categorie_id')->references('id')->on('categories'); // Définition de la clé étrangère     
+            $table->string('libelle')   ; 
             $table->timestamps();
         });
     }

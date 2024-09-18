@@ -10,7 +10,8 @@ class Tarif extends Model
     use HasFactory;
     protected $guarded=[];
 
-    public function places(){
-        return $this->hasmany(Place::class);
+    public function categorie()
+    {
+        return $this->belongsTo(Categorie::class);
     }
 }

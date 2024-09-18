@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('date_arrivee');
             $table->string('lieu_depart');
             $table->string('lieu_arrive');
+            $table->string('image');
             $table->boolean('statut'); 
             $table->string('heure_embarquement');
             $table->string('heure_depart');

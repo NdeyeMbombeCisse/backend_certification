@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('libelle');
             $table->unsignedBigInteger('categorie_id'); // Colonne pour la clé étrangère
             $table->foreign('categorie_id')->references('id')->on('categories'); // Définition de la clé étrangère
-            $table->unsignedBigInteger('tarif_id'); // Colonne pour la clé étrangère
-            $table->foreign('tarif_id')->references('id')->on('tarifs'); // Définition de la clé étrangère
+            $table->unsignedBigInteger('id_bateau'); // Colonne pour la clé étrangère
+            $table->foreign('id_bateau')->references('id')->on('bateaus'); // Définition de la clé étrangère
+            $table->boolean('is_reserved')->default(false);
             $table->timestamps();
         });
     }

@@ -13,7 +13,8 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        //
+        $places = Place::all();
+        return response()->json($places);
     }
 
     /**
@@ -29,7 +30,10 @@ class PlaceController extends Controller
      */
     public function store(StorePlaceRequest $request)
     {
-        //
+        // Pas de validation, on crée directement la place
+    $place = Place::create($request->all());
+
+    return response()->json($place, 201); 
     }
 
     /**
@@ -37,7 +41,7 @@ class PlaceController extends Controller
      */
     public function show(Place $place)
     {
-        //
+        return response()->json($place);
     }
 
     /**
@@ -53,14 +57,18 @@ class PlaceController extends Controller
      */
     public function update(UpdatePlaceRequest $request, Place $place)
     {
-        //
+        $place->update($request->all());
+
+    return response()->json($place);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Place $place)
+    public function destroy($id)
     {
-        //
+        $place = Place::findOrFail($id);
+        $place->delete();
+        return response()->json(['message' => 'place supprimer avec succes supprimée avec succès'], 200);
     }
 }

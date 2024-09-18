@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTarifRequest;
 use App\Http\Requests\UpdateTarifRequest;
 use App\Models\Tarif;
+use Illuminate\Http\Request;
+
 
 class TarifController extends Controller
 {
@@ -13,7 +15,8 @@ class TarifController extends Controller
      */
     public function index()
     {
-        //
+        $tarifs = Tarif::all();
+        return response()->json($tarifs);
     }
 
     /**
@@ -63,4 +66,18 @@ class TarifController extends Controller
     {
         //
     }
+
+    public function tarifparcat(Request $request)
+{
+    $categorieId = $request->input('categorie_id');
+    
+    if ($categorieId) {
+        $tarifs = Tarif::where('categorie_id', $categorieId)->get();
+    } else {
+        $tarifs = Tarif::all();
+    }
+    
+    return response()->json($tarifs);
+}
+
 }

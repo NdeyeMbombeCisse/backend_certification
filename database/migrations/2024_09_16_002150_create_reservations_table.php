@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users'); // Définition de la clé étrangère
             $table->unsignedBigInteger('place_id'); // Colonne pour la clé étrangère
             $table->foreign('place_id')->references('id')->on('places'); // Définition de la clé étrangère
+            $table->boolean('is_paid')->default(false);
             $table->timestamps();
         });
     }

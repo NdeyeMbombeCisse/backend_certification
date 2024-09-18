@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Categorie;
+use App\Models\Bateau;
+use App\Models\Trajet;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,9 +18,19 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+
+            BateauSeeder::class,
+            CategorieSeeder::class,
+            TarifSeeder::class,
+            PlaceSeeder::class,
+            UserSeeder::class,
+            TrajetSeeder::class,
+            TrajetSeeder::class,
+            ReservationSeeder::class,
+            InformationSeeder::class
+
+              
         ]);
     }
 }

@@ -14,4 +14,8 @@ class Categorie extends Model
         return $this->hasmany(Place::class);
     }
 
+    public function categories(){
+        return $this->hasmany(Categorie::class);
+    }
+
 }
