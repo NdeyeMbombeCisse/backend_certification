@@ -6,6 +6,7 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
 use App\Models\Place;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 
@@ -66,10 +67,16 @@ class ReservationController extends Controller
         // Marquer la place comme réservée
         $place->update(['is_reserved' => true]);
     
-        return response()->json([
-            'message' => 'Réservation créée avec succès.',
-            'reservation' => $reservation,
-        ], 201); // 201 Created
+       // Trouver l'utilisateur concerné (si l'utilisateur connecté a fait la réservation)
+    $user = User::find($request->input('user_id'));
+
+    // Envoyer la notification à l'utilisateur
+    $user->notify(new PaimentNotifcation($reservation));
+
+    return response()->json([
+        'message' => 'Réservation créée avec succès et notification envoyée.',
+        'reservation' => $reservation,
+    ], 201); // 201 Created
     }
     
     /**
@@ -155,5 +162,32 @@ class ReservationController extends Controller
             'qr_code_url' => $qrCodeUrl // Inclure l'URL du code QR dans la réponse JSON
         ], 200); // Retourner un statut 200 (OK)
     }
+
+
+    // les reservation de l'utilisateur connecte
+
+    public function getUserReservations()
+    {
+        // Récupérer l'utilisateur connecté
+        $user = auth()->user();
+    
+        // Récupérer les réservations de cet utilisateur avec les détails des places et des trajets
+        $reservations = Reservation::where('user_id', $user->id)
+                                   ->with(['place', 'trajet'])
+                                   ->get();
+    
+        // Vérifier si aucune réservation n'est trouvée
+        if ($reservations->isEmpty()) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas encore effectué de réservation.',
+            ], 404); // 404 Not Found
+        }
+    
+        // Retourner la réponse JSON avec les réservations
+        return response()->json([
+            'reservations' => $reservations,
+        ], 200);
+    }
+    
 }
 

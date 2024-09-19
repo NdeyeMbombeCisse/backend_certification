@@ -44,6 +44,11 @@ Route::get('categorieTarif', [TarifController::class, 'tarifparcat']);
 // gestion des categorie
 Route::apiResource('categories', CategorieController::class);
 
+// reservation pour le user conectee
+
+Route::get('/user/reservations', [ReservationController::class, 'getUserReservations'])->middleware('auth');
+
+
 
 
 

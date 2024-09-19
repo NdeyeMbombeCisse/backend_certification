@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             TrajetSeeder::class,
             TrajetSeeder::class,
             ReservationSeeder::class,
-            InformationSeeder::class
+            InformationSeeder::class,
+            RoleSeeder::class,
 
               
         ]);

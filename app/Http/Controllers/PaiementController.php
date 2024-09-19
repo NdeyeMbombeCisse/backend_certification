@@ -1,66 +1,76 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Requests\StorePaiementRequest;
-use App\Http\Requests\UpdatePaiementRequest;
+use GuzzleHttp\Client;
 use App\Models\Paiement;
+use Illuminate\Http\Request;
+use GuzzleHttp\Exception\RequestException;
 
-class PaiementController extends Controller
+class PaymentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function payment()
     {
-        //
-    }
+        $client = new Client();
+        $url = 'https://api.naboopay.com/api/v1/account/';
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $headers = [
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer naboo-5b3c904b-0dcc-4095-bee2-f1f76ee76696.d5d2ab5a-0adb-4859-8dd7-e7c83b163c9b',
+        ];
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePaiementRequest $request)
-    {
-        //
-    }
+        try {
+            $response = $client->request('GET', $url, [
+                'headers' => $headers,
+            ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Paiement $paiement)
-    {
-        //
-    }
+            // Récupérer le corps de la réponse
+            $responseBody = json_decode($response->getBody()->getContents(), true);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Paiement $paiement)
-    {
-        //
-    }
+            // Passer les données à la vue
+            return view('welcome', compact('responseBody'));
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePaiementRequest $request, Paiement $paiement)
-    {
-        //
+        } catch (RequestException $e) {
+            // Gérer l'erreur
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], $e->getCode());
+        }
     }
+    public function createPayment(Request $request)
+    {
+        $client = new Client();
+        $url = 'https://api.naboopay.com/api/v1/transaction/create-transaction';
+    
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer naboo-5b3c904b-0dcc-4095-bee2-f1f76ee76696.d5d2ab5a-0adb-4859-8dd7-e7c83b163c9b',
+        ];
+    
+        // Préparer le corps de la requête
+        $body = [
+            "method_of_payment" => [$request->input('method_of_payment')], // Forcer à tableau
+            "products" => $request->input('products'), // Assurez-vous que ça inclut category
+            "is_escrow" => $request->input('is_escrow'),
+            "success_url" => $request->input('success_url'),
+            "error_url" => $request->input('error_url'),
+        ];
+    
+        try {
+            $response = $client->request('PUT', $url, [
+                'headers' => $headers,
+                'json' => $body,
+            ]);
+    
+            return $response->getBody()->getContents();
+    
+        } catch (RequestException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], $e->getCode());
+        }
+    }
+    
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Paiement $paiement)
-    {
-        //
-    }
 }
+

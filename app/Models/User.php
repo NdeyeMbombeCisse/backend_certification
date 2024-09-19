@@ -13,7 +13,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable , HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -53,7 +53,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function trajets()
     {
-        return $this->belongsToMany(Trajet::class,'reservations');
+        return $this->belongsToMany(Trajet::class, 'reservations')
+                    ->withPivot('date_reservation', 'place_id', 'statut', 'is_paid')
+                    ->withTimestamps();
     }
 
     public function getJWTIdentifier()
