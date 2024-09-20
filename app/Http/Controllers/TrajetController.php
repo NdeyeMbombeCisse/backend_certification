@@ -77,38 +77,71 @@ class TrajetController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // public function update(Request $request, $id)
+    // {
+    //     $trajet = Trajet::findOrFail($id);
+
+    //     $validatedData = $request->validate([
+    //         'date_depart' => 'sometimes|date',
+    //         'date_arrivee' => 'sometimes|date',
+    //         'lieu_depart' => 'sometimes|string|max:255',
+    //         'lieu_arrive' => 'sometimes|string|max:255',
+    //         'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         'statut' => 'sometimes|boolean',
+    //         'heure_embarquement' => 'sometimes|string|max:255',
+    //         'heure_depart' => 'sometimes|string|max:255',
+    //         'bateau_id' => 'sometimes|exists:bateaus,id'
+    //     ]);
+
+    //     // Gestion de l'image
+    //     if ($request->hasFile('image')) {
+    //         // Supprimer l'ancienne image
+    //         if ($trajet->image) {
+    //             Storage::disk('public')->delete($trajet->image);
+    //         }
+
+    //         $imagePath = $request->file('image')->store('trajet_images', 'public');
+    //         $trajet->image = $imagePath;
+    //     }
+
+    //     // Mise à jour des champs
+    //     $trajet->update($validatedData);
+
+    //     return response()->json(['message' => 'Trajet mis à jour avec succès', 'trajet' => $trajet], 200);
+    // }
+
+
     public function update(Request $request, $id)
-    {
-        $trajet = Trajet::findOrFail($id);
+{
+    $trajet = Trajet::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'date_depart' => 'sometimes|date',
-            'date_arrivee' => 'sometimes|date',
-            'lieu_depart' => 'sometimes|string|max:255',
-            'lieu_arrive' => 'sometimes|string|max:255',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'statut' => 'sometimes|boolean',
-            'heure_embarquement' => 'sometimes|string|max:255',
-            'heure_depart' => 'sometimes|string|max:255',
-            'bateau_id' => 'sometimes|exists:bateaus,id'
-        ]);
-
-        // Gestion de l'image
-        if ($request->hasFile('image')) {
-            // Supprimer l'ancienne image
-            if ($trajet->image) {
-                Storage::disk('public')->delete($trajet->image);
-            }
-
-            $imagePath = $request->file('image')->store('trajet_images', 'public');
-            $trajet->image = $imagePath;
+    // Gestion de l'image
+    if ($request->hasFile('image')) {
+        // Supprimer l'ancienne image
+        if ($trajet->image) {
+            Storage::disk('public')->delete($trajet->image);
         }
 
-        // Mise à jour des champs
-        $trajet->update($validatedData);
-
-        return response()->json(['message' => 'Trajet mis à jour avec succès', 'trajet' => $trajet], 200);
+        $imagePath = $request->file('image')->store('trajet_images', 'public');
+        $trajet->image = $imagePath;
     }
+
+    // Mise à jour des autres champs sans validation
+    $trajet->date_depart = $request->input('date_depart', $trajet->date_depart);
+    $trajet->date_arrivee = $request->input('date_arrivee', $trajet->date_arrivee);
+    $trajet->lieu_depart = $request->input('lieu_depart', $trajet->lieu_depart);
+    $trajet->lieu_arrive = $request->input('lieu_arrive', $trajet->lieu_arrive);
+    $trajet->statut = $request->input('statut', $trajet->statut);
+    $trajet->heure_embarquement = $request->input('heure_embarquement', $trajet->heure_embarquement);
+    $trajet->heure_depart = $request->input('heure_depart', $trajet->heure_depart);
+    $trajet->bateau_id = $request->input('bateau_id', $trajet->bateau_id);
+
+    // Enregistrer les modifications
+    $trajet->save();
+
+    return response()->json(['message' => 'Trajet mis à jour avec succès', 'trajet' => $trajet], 200);
+}
+
 
     /**
      * Remove the specified resource from storage.

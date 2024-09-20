@@ -1,0 +1,16 @@
+[90m= [39m[34;4mApp\Models\User[39;24m {#5871
+    [34mid[39m: [35m1[39m,
+    [34memail[39m: "[32mndeyecisse188@gmail.com[39m",
+    [34mprenom[39m: "[32mNdeye Mbombe[39m",
+    [34mimage[39m: "[32mimage[39m",
+    [34mnom[39m: "[32mCisse[39m",
+    [34mtelephone[39m: "[32m784055367[39m",
+    [34mnumero_identite[39m: "[32m1234567890876[39m",
+    [34mnationnalite[39m: "[32msenegalais[39m",
+    [34memail_verified_at[39m: [36mnull[39m,
+    #[33mpassword[39m: "[32m$2y$12$zomR2A6MKi8/s5f8mrw4WeX5X4rjg//QXfAzeLyVs9KH5ltAeXfAi[39m",
+    #[33mremember_token[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2024-09-18 12:20:04[39m",
+    [34mupdated_at[39m: "[32m2024-09-18 12:20:04[39m",
+  }
+

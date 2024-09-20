@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class BateauController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     // Seul les utilisateurs ayant le rôle de super_admin peuvent accéder aux actions de ce contrôleur
+    //     $this->middleware('role:super_admin');
+    // }
     /**
      * Display a listing of the resource.
      */
