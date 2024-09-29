@@ -81,7 +81,14 @@ public function afficher_user(Request $request): JsonResponse
             'success' => true,
             'data' => $users
         ]);
+        
     }
+
+    // profil user
+
+
+    
+    
 
     public function store(Request $request)
     {
@@ -112,6 +119,8 @@ public function afficher_user(Request $request): JsonResponse
         ], 201);
     }
 
+
+    // donnee
 
     public function update(Request $request, $id)
     {
@@ -152,5 +161,28 @@ public function afficher_user(Request $request): JsonResponse
             'user' => $user,
         ], 200);
     }
+
+
+    public function getAuthenticatedUser()
+    {
+        // Vérifier si l'utilisateur est authentifié
+        if (auth()->check()) {
+            // Retourner les données de l'utilisateur authentifié
+            return response()->json([
+                'user' => auth()->user()
+            ], 200); // Statut 200 OK
+        } 
+    
+    else {
+            // Retourner une réponse d'erreur si l'utilisateur n'est pas connecté
+            // Statut 401 Unauthorized
+
+            return response()->json([
+                'success' => true,
+                'data' => $users
+            ]);
+        }
+    }
 }
+
     

@@ -27,6 +27,7 @@ Route::get('afficher_user',[AuthController::class,'afficher_user']);
 Route::post('modifier_user',[AuthController::class,'modifier_user']);
 Route::post('store',[AuthController::class,'store']);
 Route::put('updateUser/{id}', [AuthController::class, 'update']);
+Route::get('/profil', [AuthController::class, 'getAuthenticatedUser'])->middleware('auth');
 //  crud trajet
 Route::apiResource('trajets', TrajetController::class);
 // recuperation d'un seul trajet

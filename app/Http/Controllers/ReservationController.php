@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Place;
+use App\Models\Tarif;
+use App\Models\Trajet;
+use App\Models\Reservation;
+use Illuminate\Http\Request;
+use App\Notifications\ReservationCreated;
+
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
-use App\Models\Reservation;
-use App\Models\Place;
-use App\Models\User;
-use App\Models\Trajet;
-use Illuminate\Http\Request;
-use App\Notifications\PaymentNotification;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
 
 class ReservationController extends Controller
 {
@@ -147,7 +148,6 @@ public function store(Request $request)
         'place_id' => $request->input('place_id'),
         'trajet_id' => $trajet->id,
         'user_id' => $request->input('user_id'),
-        'tarif_id' => $tarif->id, // Enregistrer le tarif de la réservation
     ]);
 
     // Marquer la place comme réservée
@@ -185,7 +185,8 @@ public function store(Request $request)
     // Mettre à jour la réservation pour inclure le QR code
     $reservation->update(['qr_code' => url($qrCodePath)]);
 
-    return response()->json([
+    $user->notify(new ReservationCreated($reservation));
+        return response()->json([
         'message' => 'Réservation créée avec succès.',
         'reservation' => $reservation,
         'qr_code' => url($qrCodePath),
