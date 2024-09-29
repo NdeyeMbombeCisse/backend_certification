@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->date('date_reservation');
             $table->boolean('statut'); 
             $table->unsignedBigInteger('trajet_id'); // Colonne pour la clé étrangère
             $table->foreign('trajet_id')->references('id')->on('trajets'); // Définition de la clé étrangère

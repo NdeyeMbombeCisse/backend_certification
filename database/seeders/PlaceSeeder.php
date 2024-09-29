@@ -81,6 +81,66 @@ class PlaceSeeder extends Seeder
                 'id_bateau' => "1"
             ],
 
+            [
+                'libelle' => "f11",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f12",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f13",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f14",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f15",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f16",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f17",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f18",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f19",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
+            [
+                'libelle' => "f20",
+                'categorie_id'=> "1",
+                'id_bateau' => "1"
+            ],
+
 
             [
                 'libelle' => "c2A",
@@ -139,6 +199,75 @@ class PlaceSeeder extends Seeder
             ],
             [
                 'libelle' => "c2J",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2K",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2L",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2M",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2N",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2O",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2P",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2Q",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2R",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+
+            [
+                'libelle' => "c2S",
+                'categorie_id'=> "2",
+                'id_bateau' => "1"
+
+            ],
+            [
+                'libelle' => "c2T",
                 'categorie_id'=> "2",
                 'id_bateau' => "1"
 

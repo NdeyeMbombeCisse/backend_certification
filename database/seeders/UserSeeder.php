@@ -41,11 +41,11 @@ class UserSeeder extends Seeder
 
         ];
 
-        foreach ($users as $user) {
-            User::create($user);
-        }
+        // foreach ($users as $user) {
+        //     User::create($user);
+        // }
 
-        $user->assignRole('super_admin');
+        // $user->assignRole('super_admin');
 
     }
 }

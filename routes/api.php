@@ -10,6 +10,7 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\TarifController;
 use App\Http\Controllers\CategorieController;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 
 
@@ -28,6 +29,9 @@ Route::post('store',[AuthController::class,'store']);
 Route::put('updateUser/{id}', [AuthController::class, 'update']);
 //  crud trajet
 Route::apiResource('trajets', TrajetController::class);
+// recuperation d'un seul trajet
+Route::get('/recupererTrajet/{id}', [TrajetController::class, 'getTrajetById']);
+
 // crud bateau
 Route::apiResource('bateaux', BateauController::class);
 // crud reservation
@@ -46,9 +50,20 @@ Route::apiResource('categories', CategorieController::class);
 
 // reservation pour le user conectee
 
-Route::get('/user/reservations', [ReservationController::class, 'getUserReservations'])->middleware('auth');
+Route::get('/user/reservations', [ReservationController::class, 'getUserReservations']);
+
+// update statut
+Route::patch('/trajets/{id}/statut', [TrajetController::class, 'updateStatut']);
+
+// recuperer une place par son id
 
 
+Route::get('/trajets/{id}/places', [PlaceController::class, 'getPlacesByTrajetId']);
+// recuperer les places d'une categorie
+Route::get('/categories/{id}/places', [PlaceController::class, 'getPlacesByCategorie']);
+
+// tarif par categorie
+Route::get('/api/tarifs/{categorieId}', [TarifController::class, 'getTarifsByCategorie']);
 
 
 

@@ -22,7 +22,7 @@ class BateauController extends Controller
     public function index()
     {
         $bateaux = Bateau::all();
-        return response()->json($bateaux);
+        return response()->json(['data' => $bateaux]);
     }
 
     /**

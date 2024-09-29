@@ -7,7 +7,10 @@ use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
 use App\Models\Place;
 use App\Models\User;
+use App\Models\Trajet;
 use Illuminate\Http\Request;
+use App\Notifications\PaymentNotification;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 
 class ReservationController extends Controller
@@ -29,65 +32,173 @@ class ReservationController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(StoreReservationRequest $request)
-    // {
-    //     //
-    // }
+  
 
-    public function store(Request $request)
-    {
-        // Validation des données de réservation
-        $request->validate([
-            'date_reservation' => 'required|date',
-            'place_id' => 'required|exists:places,id',
-            'user_id' => 'required|exists:users,id',
-        ]);
-    
-        // Trouver la place
-        $place = Place::find($request->input('place_id'));
-    
-        // Vérifier si la place est déjà réservée
-        if ($place->is_reserved) {
-            return response()->json(['message' => 'Place déjà réservée.'], 400); // 400 Bad Request
-        }
-    
-        // Créer la réservation
-        $reservation = Reservation::create([
-            'date_reservation' => $request->input('date_reservation'),
-            'statut' => false,
-            'place_id' => $request->input('place_id'),
-            'trajet_id' => $request->input('trajet_id'),
-            'user_id' => $request->input('user_id'),
-            // 'is_paid' => false, // Par défaut, la réservation n'est pas payée
-        ]);
-    
-        // Marquer la place comme réservée
-        $place->update(['is_reserved' => true]);
-    
-       // Trouver l'utilisateur concerné (si l'utilisateur connecté a fait la réservation)
+
+// public function store(Request $request)
+// {
+//     // Trouver la place
+//     $place = Place::find($request->input('place_id'));
+
+//     // Vérifier si la place est déjà réservée
+//     if ($place->is_reserved) {
+//         return response()->json(['message' => 'Place déjà réservée.'], 400); // 400 Bad Request
+//     }
+
+//     // Trouver le trajet
+//     $trajet = Trajet::find($request->input('trajet_id'));
+
+//     // Vérifier si le trajet existe (pas nécessaire si la validation 'exists' est déjà utilisée)
+//     if (!$trajet) {
+//         return response()->json(['message' => 'Trajet non trouvé.'], 404); // 404 Not Found
+//     }
+
+//     // Créer la réservation
+//     $reservation = Reservation::create([
+//         'statut' => false,
+//         'place_id' => $request->input('place_id'),
+//         'trajet_id' => $trajet->id, // Utiliser l'ID du trajet trouvé
+//         'user_id' => $request->input('user_id'),
+//     ]);
+
+//     // Marquer la place comme réservée
+//     $place->update(['is_reserved' => true]);
+
+//     // Trouver l'utilisateur concerné
+//     $user = User::find($request->input('user_id'));
+
+//     $qrCodeContent = [
+//         'reservation_id' => $reservation->id,
+//         'user' => [
+//             'id' => $user->id,
+//             'name' => $user->name, // Assurez-vous d'avoir un champ 'name' ou autre
+//             'email' => $user->email,
+//         ],
+//         'place' => [
+//             'id' => $place->id,
+//             'name' => $place->name, // Assurez-vous d'avoir un champ 'name' ou autre
+//             'location' => $place->location, // Exemple d'autre champ
+//         ],
+//         'trajet' => [
+//             'id' => $trajet->id,
+//             'destination' => $trajet->destination, // Assurez-vous d'avoir un champ 'destination' ou autre
+//             'date' => $trajet->date, // Assurez-vous d'avoir un champ 'date' ou autre
+//         ],
+//     ];
+
+//     // Générer le QR code pour la réservation
+//     $qrCode = QrCode::size(300)->generate(json_encode($qrCodeContent)); // Ajustez la taille au besoin
+//     // Enregistrer le QR code en tant qu'image
+//     $qrCodePath = 'qr_codes/reservation_' . $reservation->id . '.svg'; // Path to save the QR code image
+//     file_put_contents(public_path($qrCodePath), $qrCode); // Save QR code to public directory
+
+//     // Mettre à jour la réservation pour inclure le QR code
+//     $reservation->update(['qr_code' => url($qrCodePath)]); // Stocker l'URL du QR code dans la base de données
+
+//     // Envoyer la notification à l'utilisateur
+//     // $user->notify(new PaimentNotifcation($reservation));
+
+//     return response()->json([
+//         'message' => 'Réservation créée avec succès et notification envoyée.',
+//         'reservation' => $reservation,
+//         'qr_code' => url($qrCodePath), // Return the URL of the QR code
+//     ], 201); // 201 Created
+// }
+
+
+public function store(Request $request)
+{
+    // Trouver la place
+    $place = Place::find($request->input('place_id'));
+
+    // Vérifier si la place est déjà réservée
+    if ($place->is_reserved) {
+        return response()->json(['message' => 'Place déjà réservée.'], 400); // 400 Bad Request
+    }
+
+    // Trouver le trajet
+    $trajet = Trajet::find($request->input('trajet_id'));
+
+    // Vérifier si le trajet existe
+    if (!$trajet) {
+        return response()->json(['message' => 'Trajet non trouvé.'], 404); // 404 Not Found
+    }
+
+    // Récupérer la nationalité de l'utilisateur
     $user = User::find($request->input('user_id'));
+    $userNationality = $user->nationnalite; // Assurez-vous que 'nationalite' est un champ de l'utilisateur
 
-    // Envoyer la notification à l'utilisateur
-    $user->notify(new PaimentNotifcation($reservation));
+    // Trouver la catégorie de la place
+    $categorie = $place->categorie; // Assurez-vous que la relation est définie
+
+    // Récupérer le tarif correspondant à la catégorie et à la nationalité
+    $tarif = Tarif::where('categorie_id', $categorie->id)
+                  ->where('nationnalite', $userNationality)
+                  ->first();
+
+    // Vérifier si un tarif a été trouvé
+    if (!$tarif) {
+        return response()->json(['message' => 'Tarif non trouvé pour cette catégorie et nationalité.'], 404);
+    }
+
+    // Créer la réservation
+    $reservation = Reservation::create([
+        'statut' => false,
+        'place_id' => $request->input('place_id'),
+        'trajet_id' => $trajet->id,
+        'user_id' => $request->input('user_id'),
+        'tarif_id' => $tarif->id, // Enregistrer le tarif de la réservation
+    ]);
+
+    // Marquer la place comme réservée
+    $place->update(['is_reserved' => true]);
+
+    // Contenu du QR Code
+    $qrCodeContent = [
+        'reservation_id' => $reservation->id,
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ],
+        'place' => [
+            'id' => $place->id,
+            'name' => $place->name,
+            'location' => $place->location,
+        ],
+        'trajet' => [
+            'id' => $trajet->id,
+            'destination' => $trajet->destination,
+            'date' => $trajet->date,
+        ],
+        'tarif' => [
+            'montant' => $tarif->montant, // Assurez-vous que 'montant' est un champ de tarif
+            'nationnalite' => $tarif->nationnalite,
+        ],
+    ];
+
+    // Générer le QR code pour la réservation
+    $qrCode = QrCode::size(300)->generate(json_encode($qrCodeContent));
+    $qrCodePath = 'qr_codes/reservation_' . $reservation->id . '.svg';
+    file_put_contents(public_path($qrCodePath), $qrCode);
+
+    // Mettre à jour la réservation pour inclure le QR code
+    $reservation->update(['qr_code' => url($qrCodePath)]);
 
     return response()->json([
-        'message' => 'Réservation créée avec succès et notification envoyée.',
+        'message' => 'Réservation créée avec succès.',
         'reservation' => $reservation,
+        'qr_code' => url($qrCodePath),
     ], 201); // 201 Created
-    }
-    
-    /**
-     * Display the specified resource.
-     */
-    // public function show(Reservation $reservation)
-    // {
-    //     //
-    // }
+}
 
 
+
+
+
+
+
+// detail
     public function show($id)
     {
         $reservation = Reservation::findOrFail($id);
@@ -142,9 +253,8 @@ class ReservationController extends Controller
             'reservation_id' => $reservation->id,
             'place_id' => $reservation->place_id,
             'user_id' => $reservation->user_id,
-            'date_reservation' => $reservation->date_reservation,
             'user_details' => [
-                'name' => $reservation->user->name,
+                'name' => $reservation->user->prenom,
                 'email' => $reservation->user->email,
             ],
         ];
@@ -166,27 +276,86 @@ class ReservationController extends Controller
 
     // les reservation de l'utilisateur connecte
 
-    public function getUserReservations()
+
+public function getUserReservations()
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json(['message' => 'Utilisateur non authentifié.'], 401);
+    }
+
+    $reservations = Reservation::where('user_id', $user->id)
+                                ->with(['place.categorie.tarifs', 'trajet', 'user']) // Ajoutez 'user' ici
+                                ->get();
+
+    foreach ($reservations as $reservation) {
+        $categorie = $reservation->place->categorie;
+        $tarif = $categorie->tarifs()->where('nationnalite', $user->nationnalite)->first();
+        $reservation->tarif = $tarif; // Ajoutez le tarif complet ici
+    }
+
+    return response()->json($reservations); // Assurez-vous de retourner les réservations
+}
+
+
+
+
+
+// App\Models\Reservation.php
+
+public function getTarifAttribute()
+{
+    // Récupérer la catégorie de la place associée
+    $categorie = $this->place->categorie;
+
+    // Récupérer l'utilisateur connecté
+    $user = auth()->user();
+
+    // Vérifier si la catégorie existe et récupérer le tarif correspondant à la nationalité de l'utilisateur
+    if ($categorie) {
+        $tarif = Tarif::where('categorie_id', $categorie->id)
+                      ->where('nationnalite', $user->nationnalite)
+                      ->first();
+
+        // Retourner le tarif ou null si aucun tarif n'est trouvé
+        return $tarif ? $tarif->tarif : null;
+    }
+
+    // Si la catégorie n'existe pas, retourner null
+    return null;
+}
+
+
+
+
+
+
+    // qr code
+
+    public function generateQrCode(Request $request)
     {
-        // Récupérer l'utilisateur connecté
-        $user = auth()->user();
-    
-        // Récupérer les réservations de cet utilisateur avec les détails des places et des trajets
-        $reservations = Reservation::where('user_id', $user->id)
-                                   ->with(['place', 'trajet'])
-                                   ->get();
-    
-        // Vérifier si aucune réservation n'est trouvée
-        if ($reservations->isEmpty()) {
-            return response()->json([
-                'message' => 'Vous n\'avez pas encore effectué de réservation.',
-            ], 404); // 404 Not Found
-        }
-    
-        // Retourner la réponse JSON avec les réservations
-        return response()->json([
-            'reservations' => $reservations,
-        ], 200);
+        // Récupérer les données pour le QR code (ces données viennent de la requête du frontend)
+        $reservationData = $request->input('reservation');
+        $trajetData = $request->input('trajet');
+        $userData = $request->input('user');
+
+        // Créer une chaîne de texte avec les informations nécessaires pour le QR code
+        $qrContent = "Réservation pour le trajet ID: " . $trajetData['id'] . "\n" .
+                     "Utilisateur ID: " . $userData['id'] . "\n" .
+                     "Détails de la réservation:\n" . json_encode($reservationData);
+
+        // Générer le QR code
+        $qrCode = QrCode::format('png')->size(300)->generate($qrContent);
+
+        // Sauvegarder le QR code dans le système de fichiers (par exemple, dans le dossier 'public/qrcodes')
+        $fileName = 'qrcode_' . time() . '.png';
+        Storage::put('public/qrcodes/' . $fileName, $qrCode);
+
+        // Retourner l'URL du fichier QR code généré
+        $qrCodeUrl = asset('storage/qrcodes/' . $fileName);
+
+        return response()->json(['qrCodeUrl' => $qrCodeUrl], 200);
     }
     
 }

@@ -19,53 +19,50 @@ class TarifController extends Controller
         return response()->json($tarifs);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+   
+
+    // tarif par categorie
+    // public function getTarifsByCategorie($categorieId) {
+    //     // Récupérer la nationalité de l'utilisateur connecté
+    //     $nationalite = Auth::user()->nationalite;
+
+    //     // Récupérer les tarifs correspondant à la catégorie et à la nationalité
+    //     $tarifs = Tarif::where('categorie_id', $categorieId)
+    //                    ->where('nationnalite', $nationalite)
+    //                    ->get();
+
+    //     return response()->json($tarifs);
+    // }
+
+
+    public function getTarifsByCategorie($placeId, $userNationality)
+{
+    // Trouver la place par son ID
+    $place = Place::find($placeId);
+
+    // Vérifier si la place existe
+    if (!$place) {
+        return response()->json(['message' => 'Place non trouvée.'], 404);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreTarifRequest $request)
-    {
-        //
+    // Récupérer la catégorie de la place
+    $categorie = $place->categorie;
+
+    // Récupérer le tarif correspondant à la catégorie et à la nationalité
+    $tarif = Tarif::where('categorie_id', $categorie->id)
+                  ->where('nationnalite', $userNationality)
+                  ->first();
+
+    // Vérifier si un tarif a été trouvé
+    if (!$tarif) {
+        return response()->json(['message' => 'Tarif non trouvé pour cette catégorie et nationalité.'], 404);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Tarif $tarif)
-    {
-        //
-    }
+    return response()->json([
+        'tarif' => $tarif,
+    ], 200);
+}
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tarif $tarif)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTarifRequest $request, Tarif $tarif)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Tarif $tarif)
-    {
-        //
-    }
 
     public function tarifparcat(Request $request)
 {

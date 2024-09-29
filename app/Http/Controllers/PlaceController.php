@@ -71,4 +71,20 @@ class PlaceController extends Controller
         $place->delete();
         return response()->json(['message' => 'place supprimer avec succes supprimée avec succès'], 200);
     }
+
+
+    public function getPlacesByTrajetId($trajetId) {
+        $places = Place::where('trajet_id', $trajetId)->get();
+        return response()->json($places);
+    }
+
+    // places par categorie
+
+    public function getPlacesByCategorie($categorieId)
+    {
+        return Place::where('categorie_id', $categorieId)->get();
+    }
 }
+
+
+

@@ -14,8 +14,10 @@ class Categorie extends Model
         return $this->hasmany(Place::class);
     }
 
-    public function categories(){
-        return $this->hasmany(Categorie::class);
+  
+
+    public function tarifs() {
+        return $this->hasMany(Tarif::class);
     }
 
 }

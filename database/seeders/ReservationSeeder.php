@@ -14,7 +14,7 @@ class ReservationSeeder extends Seeder
     {
         $reservations = [
             [
-                'date_reservation' => "2002-12-12", // format de date correcte pour MySQL
+              
                 'statut' => 0, // Utilisez un entier pour le statut si c'est un boolean ou tinyint
                 'trajet_id' => 2,
                 'user_id' => 1,
