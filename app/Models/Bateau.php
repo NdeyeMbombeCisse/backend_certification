@@ -9,6 +9,9 @@ class Bateau extends Model
 {
     use HasFactory;
     protected $guarded=[];
+    protected $attributes = [
+        'statut' => 0, // Définit 0 comme valeur par défaut
+    ];
 
     public function trajets(){
         return $this->hasmany(Trajet::class);

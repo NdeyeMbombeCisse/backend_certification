@@ -35,6 +35,8 @@ Route::get('/recupererTrajet/{id}', [TrajetController::class, 'getTrajetById']);
 
 // crud bateau
 Route::apiResource('bateaux', BateauController::class);
+// chnager le statut d'un bateau
+Route::put('/bateaux/{id}/statut', [BateauController::class, 'updateStatut']);
 // crud reservation
 Route::apiResource('reservations', ReservationController::class);
 //Crud information
@@ -52,9 +54,18 @@ Route::apiResource('categories', CategorieController::class);
 // reservation pour le user conectee
 
 Route::get('/user/reservations', [ReservationController::class, 'getUserReservations']);
+// nombre de reservation
+Route::get('countReservation', [ReservationController::class, 'countReservations']);
+// places restante
+Route::get('/trajetsPlaces-restantes', [TrajetController::class, 'getPlacesRestantes']);
+// afficher les trajets en cours
+
+Route::get('/trajetsEncours', [TrajetController::class, 'getPlacesRestantes']);
 
 // update statut
 Route::patch('/trajets/{id}/statut', [TrajetController::class, 'updateStatut']);
+// trajet en cours
+Route::get('count', [TrajetController::class, 'countTrajets']);
 
 // recuperer une place par son id
 
@@ -66,5 +77,9 @@ Route::get('/categories/{id}/places', [PlaceController::class, 'getPlacesByCateg
 // tarif par categorie
 Route::get('/api/tarifs/{categorieId}', [TarifController::class, 'getTarifsByCategorie']);
 
+// les reservations d'un trajet
+Route::get('trajets/{trajet}/reservations', [ReservationController::class, 'getReservationsByTrajet']);
 
+// valider qr
+Route::post('/validate-qr', [ReservationController::class, 'validateQRCode']);
 

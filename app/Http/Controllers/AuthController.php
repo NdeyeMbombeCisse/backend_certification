@@ -41,13 +41,15 @@ class AuthController extends Controller
         }
 
         $user = auth()->user();
-
+        $role = $user->getRoleNames();
         return response()->json([
             "access_token" => $token,
             "token_type" => "bearer",
             "user" => auth()->user(),
             "user_id" => $user->id,
-            "expires_in" => env("JWT_TTL") * 60 . " secondes"
+            "expires_in" => env("JWT_TTL") * 60 . " secondes",
+            'role' =>  $role,
+
         ]);
     }
 
@@ -64,7 +66,9 @@ class AuthController extends Controller
         "access_token" => $token,
         "token_type" => "bearer",
         "user" => auth()->user(),
-        "expires_in" => env("JWT_TTL") * 60 . " secondes"
+        "expires_in" => env("JWT_TTL") * 60 . " secondes",
+        'role' =>  $role,
+
 
     ]);
    }
@@ -111,11 +115,15 @@ public function afficher_user(Request $request): JsonResponse
             'password' => Hash::make($request->input('password')),
             'image' => $imagePath, // Enregistrer le chemin de l'image dans la base de données
         ]);
+        $user->assignRole('user');
+        $role = $user->getRoleNames();
     
         // Retourner une réponse JSON
         return response()->json([
             'message' => 'Utilisateur créé avec succès',
             'user' => $user,
+            'role' =>  $role,
+
         ], 201);
     }
 

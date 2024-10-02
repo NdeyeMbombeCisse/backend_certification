@@ -16,7 +16,8 @@ class InformationController extends Controller
     public function index()
     {
         $informations = Information::all();
-         return response()->json($informations);
+         return response()->json(['data' => $informations]);
+
     }
 
     /**

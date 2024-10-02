@@ -8,6 +8,7 @@ use App\Models\Trajet;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
+use App\Models\Place; 
 
 
 
@@ -16,14 +17,30 @@ class TrajetController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // $trajets = Trajet::all();
-        $trajets = Trajet::with('bateau')->get(); // Eager Loading
-        return response()->json(['data' =>  $trajets]);
+    // public function index()
+    // {
+    //     // $trajets = Trajet::all();
+    //     $trajets = Trajet::with('bateau')->get(); // Eager Loading
+    //     return response()->json(['data' =>  $trajets]);
 
+    // }
+
+    public function index()
+{
+    $trajets = Trajet::with(['bateau', 'reservations.place'])->get(); // Eager Loading
+
+    foreach ($trajets as $trajet) {
+        // Vérifiez que la colonne existe bien
+        $totalPlaces = Place::where('id_bateau', $trajet->bateau_id)->count(); // Utilisez 'id_bateau' pour la condition
+        $placesReservees = $trajet->reservations->count(); // Nombre de réservations pour ce trajet
+        $trajet->placesRestantes = $totalPlaces - $placesReservees; // Calcul des places restantes
     }
 
+    return response()->json(['data' => $trajets]);
+}
+
+
+    
     /**
      * Show the form for creating a new resource.
      */
@@ -59,6 +76,13 @@ class TrajetController extends Controller
         return response()->json(['message' => 'Trajet créé avec succès', 'trajet' => $trajet], 201);
     }
     
+    // compter le nombre d etrajet en cours
+
+    public function countTrajets()
+{
+    $count = Trajet::where('statut', 1)->count(); // Compte les trajets avec le statut 1
+    return response()->json(['count' => $count]);
+}
 
 
     /**
@@ -236,6 +260,19 @@ public function getTrajetById($id)
         ], 200);
     }
 
+    // places restante pour tous les trajets
+    public function getPlacesRestantes()
+    {
+        $trajets = Trajet::with('reservations')->get(); // Récupère tous les trajets avec leurs réservations
+        $placesRestantes = [];
+    
+        foreach ($trajets as $trajet) {
+            $totalReservations = $trajet->reservations->count();
+            $placesRestantes[$trajet->id] = $trajet->total_places - $totalReservations; // Ajustez 'total_places' selon votre modèle
+        }
+    
+        return response()->json(['data'=>$placesRestantes]);
+    }
 
     // update statut
 
@@ -255,4 +292,31 @@ public function getTrajetById($id)
 
     return response()->json(['message' => 'Statut du trajet mis à jour avec succès.', 'data' => $trajet], 200);
 }
+
+// afficher les trajets en cours
+
+
+
+public function getTrajetsEnCours()
+{
+    $trajets = Trajet::with(['bateau', 'reservations.place'])
+    ->where('statut', 1) // Filter where 'statut' is 1
+    ->get();
+
+foreach ($trajets as $trajet) {
+    // Calculate total places and reserved places
+    $totalPlaces = Place::where('id_bateau', $trajet->bateau_id)->count(); 
+    $placesReservees = $trajet->reservations->count(); 
+    $trajet->placesRestantes = $totalPlaces - $placesReservees; 
+}
+
+// Log to ensure correct data is being fetched
+\Log::info($trajets);
+
+return response()->json(['data' => $trajets]);
+}
+
+
+
+
 }

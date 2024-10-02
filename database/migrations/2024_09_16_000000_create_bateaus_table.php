@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('libelle');
             $table->text('description');
-            $table->boolean('statut'); 
+            $table->boolean('statut')->default(false);; 
             $table->timestamps();
         });
     }

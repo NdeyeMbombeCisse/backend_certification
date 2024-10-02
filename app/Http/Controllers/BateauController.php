@@ -25,6 +25,29 @@ class BateauController extends Controller
         return response()->json(['data' => $bateaux]);
     }
 
+
+    // changer le statut d'un bateau
+
+    public function updateStatut(Request $request, $id)
+    {
+        // Valider la requête
+        $request->validate([
+            'statut' => 'required|integer|in:0,1', // Assurez-vous que le statut est soit 0 soit 1
+        ]);
+
+        // Trouver le bateau par son ID
+        $bateau = Bateau::find($id);
+        if (!$bateau) {
+            return response()->json(['message' => 'Bateau non trouvé.'], 404);
+        }
+
+        // Mettre à jour le statut
+        $bateau->statut = $request->statut;
+        $bateau->save();
+
+        return response()->json(['message' => 'Statut mis à jour avec succès.', 'bateau' => $bateau]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -41,7 +64,7 @@ class BateauController extends Controller
         $request->validate([
             'libelle' => 'required|string|max:255',
             'description' => 'required|string',
-            'statut' => 'required|boolean',
+            // 'statut' => 'required|boolean',
         ]);
 
         $bateau = Bateau::create($request->all());

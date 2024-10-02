@@ -18,5 +18,10 @@ class Trajet extends Model
     {
         return $this->belongsToMany(User::class,'reservations');
     }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }
 

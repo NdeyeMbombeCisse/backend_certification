@@ -84,7 +84,24 @@ class PlaceController extends Controller
     {
         return Place::where('categorie_id', $categorieId)->get();
     }
+
+    // places restantes
+    public function getPlacesRestantes()
+    {
+        $trajets = Trajet::with('reservations')->where('statut', 1)->get(); // Récupère uniquement les trajets avec le statut 1
+        $placesRestantes = [];
+    
+        foreach ($trajets as $trajet) {
+            $totalReservations = $trajet->reservations->count();
+            $placesRestantes[$trajet->id] = $trajet->total_places - $totalReservations; // Ajustez 'total_places' selon votre modèle
+        }
+    
+        return response()->json(['data' => $placesRestantes]);
+    }
+    
+
 }
+
 
 
 
