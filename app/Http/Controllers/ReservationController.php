@@ -193,6 +193,18 @@ class ReservationController extends Controller
     }
     
 
+
+    // places reservees
+
+    public function getReservedPlaces($trajetId)
+{
+    // Récupérer les réservations pour le trajet donné
+    $reservedPlaces = Reservation::where('trajet_id', $trajetId)
+        ->pluck('place_id'); // Récupérer uniquement les IDs des places réservées
+
+    return response()->json(['reserved_places' => $reservedPlaces]);
+}
+
 // calculer le nombre de reservations
 
 public function countReservations()
