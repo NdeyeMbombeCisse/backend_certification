@@ -86,4 +86,8 @@ Route::post('/validate-qr', [ReservationController::class, 'validateQRCode']);
 // places reservee
 Route::get('/trajets/{id}/places-reservees', [ReservationController::class, 'getReservedPlaces']);
 
+// route pour le ticket
+Route::get('/reservations/{id}/ticket', [ReservationController::class, 'downloadTicket'])
+    ->name('reservations.ticket');
+
 

@@ -6,10 +6,11 @@ use App\Models\User;
 use App\Models\Place;
 use App\Models\Tarif;
 use App\Models\Trajet;
+use Barryvdh\DomPDF\Facade\Pdf; 
 use App\Models\Reservation;
 use Illuminate\Http\Request;
-use App\Notifications\ReservationCreated;
 
+use App\Notifications\ReservationCreated;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
@@ -41,18 +42,7 @@ class ReservationController extends Controller
     }
     
 
-    // les reservations d'un trajet
-    // public function getReservationsByTrajet($trajetId)
-    // {
-    //     // Récupérer les réservations pour le trajet donné avec les relations nécessaires
-    //     $reservations = Reservation::where('trajet_id', $trajetId)
-    //         ->with(['user', 'place.categorie']) // Inclure la place et sa catégorie
-    //         ->get();
-
-    //     // Retourner les réservations sous forme de réponse JSON
-    //     return response()->json([
-    //         'data' => $reservations // Encapsuler les réservations dans un tableau 'data'
-    //     ]);    }
+ 
     
 
     public function getReservationsByTrajet($trajetId)
@@ -183,15 +173,67 @@ class ReservationController extends Controller
         $reservation->update(['qr_code' => url($qrCodePath)]);
     
         // Notification à l'utilisateur
-        $user->notify(new ReservationCreated($reservation));
+        // $user->notify(new ReservationCreated($reservation));
+
+        $ticketUrl = $this->generateTicket($reservation, $qrCodePath);
+
+        // Notification à l'utilisateur avec l'URL du ticket
+        $user->notify(new ReservationCreated($reservation, $ticketUrl));
     
         return response()->json([
             'message' => 'Réservation créée avec succès.',
             'reservation' => $reservation,
             'qr_code' => url($qrCodePath),
+            'ticket_url' => $ticketUrl,
         ], 201); // 201 Created
     }
     
+
+    // generation ticket
+    private function generateTicket($reservation, $qrCodePath)
+{
+    // Créez une logique pour générer un ticket
+    $ticketContent = [
+        'reservation_id' => $reservation->id,
+        'place' => $reservation->place->libelle,
+        'user' => $reservation->user->prenom . ' ' . $reservation->user->nom,
+        'email'=>$reservation->user->email,
+        'telephone'=> $reservation->user->telephone,
+        'CNI'=>$reservation->user->numero_identite,
+        'trajet' => $reservation->trajet->lieu_depart . ' - ' . $reservation->trajet->lieu_arrive,
+        'embarquement' =>$reservation->trajet->heure_embarquement,
+        'depart'=>$reservation->trajet->heure_depart,
+        'qr_code' => 'data:image/svg+xml;base64,' . base64_encode(file_get_contents(public_path($qrCodePath))), // Mettre le QR code ici
+       ];
+
+    // Vous pouvez utiliser une bibliothèque comme DomPDF ou SnappyPDF pour générer un PDF
+    // Exemple fictif :
+    $pdf = PDF::loadView('tickets.template', compact('ticketContent'));
+    $ticketPath = 'tickets/ticket_' . $reservation->id . '.pdf';
+    $pdf->save(public_path($ticketPath));
+
+    return url($ticketPath); // Retourne l'URL du ticket généré
+}
+
+
+
+
+// enregistrer le ticket
+public function downloadTicket($reservationId)
+{
+    // Trouvez la réservation par son ID
+    $reservation = Reservation::findOrFail($reservationId); // Cela lèvera une exception si la réservation n'est pas trouvée
+
+    // Chemin du QR code
+    $qrCodePath = 'qr_codes/reservation_' . $reservation->id . '.svg'; // Assurez-vous que le chemin est correct
+
+    // Générez le ticket
+    $ticketUrl = $this->generateTicket($reservation, $qrCodePath); // Appel de la fonction pour générer le ticket
+    $user->notify(new ReservationCreated($reservation, $ticketUrl));
+
+    return response()->json(['ticket_url' => $ticketUrl]); // Retourne l'URL du ticket généré
+}
+
 
 
     // places reservees

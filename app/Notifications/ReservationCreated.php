@@ -12,15 +12,18 @@ class ReservationCreated extends Notification
     use Queueable;
 
     protected $reservation;
+    protected $ticketUrl;
 
-    public function __construct($reservation)
+  
+    public function __construct($reservation, $ticketUrl)
     {
         $this->reservation = $reservation;
+        $this->ticketUrl = $ticketUrl; 
     }
 
     public function via($notifiable)
     {
-        return ['mail']; // Vous pouvez ajouter d'autres canaux comme 'database' ou 'broadcast'
+        return ['mail']; 
     }
 
     public function toMail($notifiable)
@@ -28,11 +31,12 @@ class ReservationCreated extends Notification
         return (new MailMessage)
             ->greeting('Bonjour!')
             ->line('Votre réservation a été créée avec succès.')
-            ->action('Voir votre réservation', url('/reservations/'.$this->reservation->id))
+            ->action('Voir votre réservation', url()) 
+            ->line('Vous pouvez télécharger votre ticket ici :')
+            ->action('Télécharger le ticket', $this->ticketUrl) // Utilisez $this->ticketUrl
             ->line('Merci d\'avoir choisi notre service!');
     }
 
-    // Si vous voulez stocker cette notification dans la base de données
     public function toArray($notifiable)
     {
         return [
