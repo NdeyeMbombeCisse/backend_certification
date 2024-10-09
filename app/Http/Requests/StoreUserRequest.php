@@ -5,19 +5,23 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
-{
-    public function rules()
+{public function rules()
     {
-        // return [
-        //     'email' => 'required|email|unique:users,email',
-        //     'prenom' => 'required|string|max:255',
-        //     'image' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
-        //     'nom' => 'required|string|max:255',
-        //     'telephone' => 'required|string|unique:users,telephone',
-        //     'numero_identite' =>'required|string|size:13',
-        //     'nationnalite' => 'required|in:senegalais,etranger resident,etranger non resident',
-        //     'password' => 'required|string|min:8|confirmed',
-        // ];
+        return [
+            'titre' => 'required|string|max:255', // Requis, chaîne de caractères, max 255 caractères
+            'description' => 'required|string', // Requis, doit être du texte
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'titre.required' => 'Le titre est requis.',
+            'titre.string' => 'Le titre doit être une chaîne de caractères.',
+            'titre.max' => 'Le titre ne peut pas dépasser 255 caractères.',
+            'description.required' => 'La description est requise.',
+            'description.string' => 'La description doit être une chaîne de caractères.',
+        ];
     }
 
     

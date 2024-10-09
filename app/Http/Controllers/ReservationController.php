@@ -113,13 +113,12 @@ class ReservationController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Utilisateur non trouvé.'], 404); // 404 Not Found
         }
-        $userNationality = $user->nationnalite; // Assurez-vous que 'nationalite' est un champ de l'utilisateur
+        $userNationality = $user->nationnalite; 
     
         // Trouver la catégorie de la place
-        $categorie = $place->categorie; // Assurez-vous que la relation est définie
+        $categorie = $place->categorie; 
     
-        // Récupérer le tarif correspondant à la catégorie et à la nationalité
-        // Récupérer le tarif correspondant à la catégorie et à la nationalité
+        
     $tarif = Tarif::where('categorie_id', $categorie->id)
                   ->where('nationnalite', $userNationality)
                   ->first();
@@ -171,9 +170,6 @@ class ReservationController extends Controller
     
         // Mettre à jour la réservation pour inclure le QR code
         $reservation->update(['qr_code' => url($qrCodePath)]);
-    
-        // Notification à l'utilisateur
-        // $user->notify(new ReservationCreated($reservation));
 
         $ticketUrl = $this->generateTicket($reservation, $qrCodePath);
 
@@ -222,16 +218,16 @@ class ReservationController extends Controller
 public function downloadTicket($reservationId)
 {
     // Trouvez la réservation par son ID
-    $reservation = Reservation::findOrFail($reservationId); // Cela lèvera une exception si la réservation n'est pas trouvée
+    $reservation = Reservation::findOrFail($reservationId); 
 
     // Chemin du QR code
-    $qrCodePath = 'qr_codes/reservation_' . $reservation->id . '.svg'; // Assurez-vous que le chemin est correct
+    $qrCodePath = 'qr_codes/reservation_' . $reservation->id . '.svg'; 
 
     // Générez le ticket
-    $ticketUrl = $this->generateTicket($reservation, $qrCodePath); // Appel de la fonction pour générer le ticket
+    $ticketUrl = $this->generateTicket($reservation, $qrCodePath); 
     $user->notify(new ReservationCreated($reservation, $ticketUrl));
 
-    return response()->json(['ticket_url' => $ticketUrl]); // Retourne l'URL du ticket généré
+    return response()->json(['ticket_url' => $ticketUrl]); 
 }
 
 
