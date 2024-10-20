@@ -11,6 +11,8 @@ use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\TarifController;
 use App\Http\Controllers\CategorieController;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Http\Controllers\NotificationController;
+
 
 
 
@@ -72,7 +74,8 @@ Route::get('count', [TrajetController::class, 'countTrajets']);
 
 Route::get('/trajets/{id}/places', [PlaceController::class, 'getPlacesByTrajetId']);
 // recuperer les places d'une categorie
-Route::get('/categories/{id}/places', [PlaceController::class, 'getPlacesByCategorie']);
+// Route::get('/categories/{id}/places', [PlaceController::class, 'getPlacesByCategorie']);
+Route::get('/trajets/{trajet}/categories/{categorie}/places', [PlaceController::class, 'getPlacesByCategorie']);
 
 // tarif par categorie
 Route::get('/api/tarifs/{categorieId}', [TarifController::class, 'getTarifsByCategorie']);
@@ -91,3 +94,28 @@ Route::get('/reservations/{id}/ticket', [ReservationController::class, 'download
     ->name('reservations.ticket');
 
 
+// place restantes
+
+// Route pour récupérer les places disponibles en JSON
+// Route::get('/trajets/{trajetId}/places', [PlaceController::class, 'getAvailablePlacesForTrajet'])
+//     ->name('trajets.places.available');
+
+    Route::get('/reservations/trajet/{trajetId}', [PlaceController::class, 'getAvailablePlacesForTrajet']);
+
+    // notification
+
+
+// Route::middleware('auth:api')->get('/notifications', [NotificationController::class, 'index']);
+Route::get('/notifications', [NotificationController::class, 'index']);
+
+// chnager le statut de la place
+Route::put('/placeReservee/{id}', [PlaceController::class, 'updatePlaceReservation']);
+
+Route::get('places/trajet/{id}', [PlaceController::class, 'getPlacesByTrajet']);
+
+// Route pour récupérer les trajets publiés par semaine
+Route::get('/trajets-by-week', [TrajetController::class, 'getTrajetsByWeek']);
+// resdrvation par semaine
+Route::get('/reservation/weekly', [ReservationController::class, 'getReservationsByWeek']);
+// voayge effectuer
+Route::get('/voyages/effectues/semaine', [ReservationController::class, 'getVoyagesEffectuesByWeek']);

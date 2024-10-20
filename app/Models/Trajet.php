@@ -11,7 +11,7 @@ class Trajet extends Model
     protected $guarded=[];
 
     public function bateau(){
-        return $this->belongsto(Bateau::class);
+        return $this->belongsTo(Bateau::class);
     }
 
     public function users()
@@ -22,6 +22,12 @@ class Trajet extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+
+    public function places()
+    {
+        return $this->hasManyThrough(Place::class, Bateau::class, 'id', 'bateau_id', 'bateau_id', 'id');
     }
 }
 

@@ -28,6 +28,11 @@ class Place extends Model
         return $this->hasOne(Reservation::class);
     }
 
+    public static function getAvailablePlaces()
+    {
+        return self::where('is_reserved', false)->get();
+    }
+
 
 
 }

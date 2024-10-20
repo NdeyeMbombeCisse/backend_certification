@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('nom');
             $table->string('telephone')->unique();
             $table->string('numero_identite')->unique();
-            $table->enum('nationnalite', ['senegalais', 'stranger resident', 'etranger non resident']);
+            $table->enum('nationnalite', ['senegalais', 'etranger resident', 'etranger non resident']);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

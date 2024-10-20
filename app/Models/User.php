@@ -22,7 +22,10 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $guarded=[];
 
-    
+    // public function notifications()
+    // {
+    //     return $this->hasMany(Notification::class);
+    // }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -66,5 +69,11 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
     }
 }
