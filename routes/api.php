@@ -3,14 +3,15 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TrajetController;
-use App\Http\Controllers\BateauController;
-use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\InformationController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\TarifController;
-use App\Http\Controllers\CategorieController;
+use App\Http\Controllers\BateauController;
+use App\Http\Controllers\TrajetController;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Http\Controllers\PaiementController;
+use App\Http\Controllers\CategorieController;
+use App\Http\Controllers\InformationController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\NotificationController;
 
 
@@ -119,3 +120,10 @@ Route::get('/trajets-by-week', [TrajetController::class, 'getTrajetsByWeek']);
 Route::get('/reservation/weekly', [ReservationController::class, 'getReservationsByWeek']);
 // voayge effectuer
 Route::get('/voyages/effectues/semaine', [ReservationController::class, 'getVoyagesEffectuesByWeek']);
+
+// paiement
+Route::post('create-transaction/{reservation_id}', [PaiementController::class, 'createTransaction']);
+
+Route::get('/reservation/success/{id}', [PaiementController::class, 'success'])->name('reservation.success');
+
+Route::get('/reservation/error/{id}', [PaiementController::class, 'error'])->name('reservation.error');
