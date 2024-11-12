@@ -30,7 +30,11 @@ class Reservation extends Model
         return $this->belongsTo(Trajet::class);
     }
 
-   
+    public function no_connect()
+    {
+        return $this->belongsTo(Noconnect::class);
+    }
+
 
     
 }

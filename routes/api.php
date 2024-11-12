@@ -42,6 +42,8 @@ Route::apiResource('bateaux', BateauController::class);
 Route::put('/bateaux/{id}/statut', [BateauController::class, 'updateStatut']);
 // crud reservation
 Route::apiResource('reservations', ReservationController::class);
+Route::post('reservations/noconnect', [ReservationController::class, 'storeNoConnect']);
+
 //Crud information
 Route::apiResource('informations', InformationController::class);
 // crud place
